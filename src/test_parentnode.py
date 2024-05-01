@@ -35,6 +35,7 @@ class TestParentNode(unittest.TestCase):
 
         self.assertEqual('<div class="container"><p><b>Bold text</b>Normal text<i>italic text</i>Normal text</p><div><p style="font-weight: bold"><span>Text span</span></p></div></div>', node.to_html())
 
+
 if __name__ == "__main__":
     unittest.main()
 

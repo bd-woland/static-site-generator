@@ -14,10 +14,11 @@ class TestLeafNode(unittest.TestCase):
         self.assertEqual('<a href="https://www.google.com">Click me!</a>', link.to_html())
 
     def test_value_is_required(self):
-        def create_node():
-            LeafNode(value=None)
+        def to_html_without_value():
+            node = LeafNode(value=None)
+            node.to_html()
 
-        self.assertRaises(ValueError, create_node)
+        self.assertRaises(ValueError, to_html_without_value)
 
 
 if __name__ == "__main__":
