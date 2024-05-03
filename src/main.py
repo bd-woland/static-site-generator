@@ -1,5 +1,5 @@
 from textnode import TextNode
-from functions import text_node_to_html_node
+from functions import (text_node_to_html_node)
 
 
 def main():
