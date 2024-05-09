@@ -86,15 +86,20 @@ def text_to_textnodes(text: str) -> list[TextNode]:
         lambda nodes: split_nodes_delimiter(nodes, '`', TextNode.CODE),
         split_nodes_image,
         split_nodes_link
-    ];
+    ]
 
     nodes = [TextNode(text, TextNode.TEXT)]
 
     for transformer in transformers:
-        print(nodes)
         nodes = transformer(nodes)
 
     return nodes
+
+
+def markdown_to_blocks(markdown: str) -> list[str]:
+    blocks = re.split('\n{2,}', markdown)
+
+    return list(map(lambda block: block.strip(), blocks))
 
 
 def __split_text_nodes(old_nodes: list[TextNode|HTMLNode], node_splitter: callable) -> list[TextNode|HTMLNode]:

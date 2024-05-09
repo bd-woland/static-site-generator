@@ -2,7 +2,7 @@ import unittest
 
 from textnode import TextNode
 from leafnode import LeafNode
-from functions import (split_nodes_delimiter, extract_markdown_images, extract_markdown_links, split_nodes_image, split_nodes_link, text_to_textnodes)
+from functions import (split_nodes_delimiter, extract_markdown_images, extract_markdown_links, split_nodes_image, split_nodes_link, text_to_textnodes, markdown_to_blocks)
 
 
 class TestFunctions(unittest.TestCase):
@@ -140,6 +140,25 @@ class TestFunctions(unittest.TestCase):
             TextNode(" and a ", TextNode.TEXT),
             TextNode("link", TextNode.LINK, "https://boot.dev"),
         ], text_to_textnodes(text))
+
+    def test_markdown_to_blocks(self):
+        markdown = '''
+This is **bolded** paragraph
+
+   This is another paragraph with *italic* text and `code` here
+This is the same paragraph on a new line
+
+
+* This is a list
+* with items   
+'''
+
+        self.assertEqual([
+            'This is **bolded** paragraph',
+            'This is another paragraph with *italic* text and `code` here\nThis is the same paragraph on a new line',
+            '* This is a list\n* with items',
+        ], markdown_to_blocks(markdown))
+
 
 if __name__ == "__main__":
     unittest.main()
