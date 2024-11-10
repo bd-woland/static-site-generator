@@ -120,6 +120,20 @@ def extract_title(markdown: str) -> str:
     raise Exception('Markdown does not contain any level 1 headings.')
 
 
+def generate_page(from_path: str, template_path: str, dest_path: str):
+    print(f'Generating page from {from_path} to {dest_path} using {template_path}')
+
+    markdown = get_file_contents(from_path)
+    template = get_file_contents(template_path)
+
+    title = extract_title(markdown)
+    content = markdown_to_html_node(markdown).to_html()
+
+    html = template.replace('{{ Title }}', title).replace('{{ Content }}', content)
+
+    put_file_contents(dest_path, html)
+
+
 def __split_text_nodes(old_nodes: list[TextNode|HTMLNode], node_splitter: callable) -> list[TextNode|HTMLNode]:
     split_nodes = []
 
