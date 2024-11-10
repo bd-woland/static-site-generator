@@ -5,6 +5,7 @@ from leafnode import LeafNode
 from htmlnode import HTMLNode
 from parentnode import ParentNode
 from blocktype import (BlockType, block_to_block_type)
+from filesystem import (get_file_contents, put_file_contents)
 
 
 def text_node_to_html_node(text_node: TextNode) -> LeafNode:
@@ -99,7 +100,7 @@ def text_to_textnodes(text: str) -> list[TextNode]:
 
 
 def markdown_to_blocks(markdown: str) -> list[str]:
-    blocks = re.split('\n{2,}', markdown)
+    blocks = re.split('\n{2,}', markdown.strip())
 
     return list(map(lambda block: block.strip(), blocks))
 
@@ -210,9 +211,9 @@ def __code_block_to_html_node(block: str) -> ParentNode:
     if (1 == len(lines)):
         text = block[3:-4]
     else:
-        text = ''.join(lines[1:-2])
+        text = '\n'.join(lines[1:-1])
 
-    return ParentNode('pre', [ParentNode('code', text)])
+    return ParentNode('pre', [LeafNode('code', text)])
 
 
 def __heading_block_to_html_node(block: str) -> ParentNode:

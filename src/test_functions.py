@@ -150,7 +150,10 @@ This is the same paragraph on a new line
 
 
 * This is a list
-* with items   
+* with items
+
+
+
 '''
 
         self.assertEqual([
@@ -171,13 +174,23 @@ This is the same paragraph on a new line
 
 
 * This is a list
-* with items   
+* with items
+
+```
+const test = () => {
+    console.log('test'!)
+}
+```
+
 '''
 
         self.assertEqual(
-            '<div><h3>This is a level 3 heading</h3><p>This is <b>bolded</b> paragraph</p><p>This is another paragraph with <i>italic</i> text and <code>code</code> here\nThis is the same paragraph on a new line</p><ul><li>This is a list</li><li>with items</li></ul></div>',
+            '''<div><h3>This is a level 3 heading</h3><p>This is <b>bolded</b> paragraph</p><p>This is another paragraph with <i>italic</i> text and <code>code</code> here\nThis is the same paragraph on a new line</p><ul><li>This is a list</li><li>with items</li></ul><pre><code>const test = () => {
+    console.log('test'!)
+}</code></pre></div>''',
             markdown_to_html_node(markdown).to_html()
         )
+
 
     def test_extract_title(self):
         self.assertEqual([
