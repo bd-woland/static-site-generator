@@ -95,6 +95,7 @@ class TestFunctions(unittest.TestCase):
         text_without_links = "This is text without links"
         text_with_links =  "This is text with a [link](https://www.example.com) and [another](https://www.example.com/another)"
         text_with_link_and_image =  "This is text with a [link](https://www.example.com) and an ![image](https://www.example.com/image.jpg)"
+        text_starting_with_link = 'asd [Back Home](/)'
 
         self.assertEqual([], extract_markdown_links(text_without_links))
         self.assertEqual([
@@ -104,6 +105,9 @@ class TestFunctions(unittest.TestCase):
         self.assertEqual([
             ('link', 'https://www.example.com'),
         ], extract_markdown_links(text_with_link_and_image))
+        self.assertEqual([
+            ('Back Home', '/'),
+        ], extract_markdown_links(text_starting_with_link))
 
     def test_split_nodes_image(self):
         node = TextNode("This is text with an ![image](https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/zjjcJKZ.png) and another ![second image](https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/3elNhQu.png)", TextNode.TEXT)

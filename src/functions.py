@@ -1,11 +1,14 @@
+import os
 import re
+
+from pathlib import Path
 
 from textnode import TextNode
 from leafnode import LeafNode
 from htmlnode import HTMLNode
 from parentnode import ParentNode
 from blocktype import (BlockType, block_to_block_type)
-from filesystem import (get_file_contents, put_file_contents)
+from filesystem import (get_file_contents, put_file_contents, map_dir)
 
 
 def text_node_to_html_node(text_node: TextNode) -> LeafNode:
@@ -55,7 +58,7 @@ def extract_markdown_images(text: str) -> list[tuple[str, str]]:
 
 
 def extract_markdown_links(text: str) -> list[(str, str)]:
-    return re.findall(r"[^!]\[(.*?)\]\((.*?)\)", text)
+    return re.findall(r"(?:^|[^!])\[(.*?)\]\((.*?)\)", text)
 
 
 def split_nodes_image(old_nodes: list[TextNode|HTMLNode]) -> list[TextNode|HTMLNode]:
@@ -132,6 +135,15 @@ def generate_page(from_path: str, template_path: str, dest_path: str):
     html = template.replace('{{ Title }}', title).replace('{{ Content }}', content)
 
     put_file_contents(dest_path, html)
+
+
+def generate_pages_recursive(dir_path_content: str, template_path: str, dest_dir_path: str):
+    def map_file(src_path: str, target_dir: str):
+        target_path = os.path.join(target_dir, Path(src_path).with_suffix('.html').name)
+
+        generate_page(src_path, template_path, target_path)
+
+    map_dir(dir_path_content, dest_dir_path, map_file)
 
 
 def __split_text_nodes(old_nodes: list[TextNode|HTMLNode], node_splitter: callable) -> list[TextNode|HTMLNode]:

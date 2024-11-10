@@ -1,7 +1,12 @@
 import os
 import shutil
 
+
 def copy_dir(src: str, target: str):
+    map_dir(src, target, shutil.copy)
+
+
+def map_dir(src: str, target: str, callback: callable):
     if not os.path.exists(src):
         raise Exception(f'Path "{src}" does not exist.')
 
@@ -15,10 +20,10 @@ def copy_dir(src: str, target: str):
         src_path = os.path.join(src, file_name)
 
         if os.path.isfile(src_path):
-            shutil.copy(src_path, target)
+            callback(src_path, target)
         else:
             target_dir = os.path.join(target, file_name)
-            copy_dir(src_path, target_dir)
+            map_dir(src_path, target_dir, callback)
 
 
 def get_file_contents(file: str) -> str:
@@ -30,13 +35,18 @@ def get_file_contents(file: str) -> str:
         f.close()
 
 
-def put_file_contents(file: str, content: str):
+def put_file_contents(file: str, content: str, append: bool = False):
     dir = os.path.dirname(file)
 
     if not os.path.exists(dir):
         os.makedirs(dir, 0o755)
-    
-    f = open(file, '+a')
+
+    if append:
+        mode = 'a+'
+    else:
+        mode = 'w+'
+
+    f = open(file, mode)
 
     try:
         f.write(content)
