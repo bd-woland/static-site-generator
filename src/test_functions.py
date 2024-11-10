@@ -2,7 +2,7 @@ import unittest
 
 from textnode import TextNode
 from leafnode import LeafNode
-from functions import (split_nodes_delimiter, extract_markdown_images, extract_markdown_links, split_nodes_image, split_nodes_link, text_to_textnodes, markdown_to_blocks, markdown_to_html_node)
+from functions import (split_nodes_delimiter, extract_markdown_images, extract_markdown_links, split_nodes_image, split_nodes_link, text_to_textnodes, markdown_to_blocks, markdown_to_html_node, extract_title)
 from parentnode import ParentNode
 
 class TestFunctions(unittest.TestCase):
@@ -178,6 +178,27 @@ This is the same paragraph on a new line
             '<div><h3>This is a level 3 heading</h3><p>This is <b>bolded</b> paragraph</p><p>This is another paragraph with <i>italic</i> text and <code>code</code> here\nThis is the same paragraph on a new line</p><ul><li>This is a list</li><li>with items</li></ul></div>',
             markdown_to_html_node(markdown).to_html()
         )
+
+    def test_extract_title(self):
+        self.assertEqual([
+            extract_title('# Hello'),
+            extract_title('# Heading with **bolded** word'),
+            extract_title('''
+## Before lvl 1 heading
+
+# Heading
+
+### After lvl 1 heading
+''')
+        ], [
+            'Hello',
+            'Heading with <b>bolded</b> word',
+            'Heading'
+        ])
+
+
+    def test_extract_title_invalid(self):
+        self.assertRaises(Exception, lambda: extract_title('## Markdown **without** lvl 1 heading'))
 
 
 if __name__ == "__main__":
