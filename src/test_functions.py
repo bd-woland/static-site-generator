@@ -2,8 +2,8 @@ import unittest
 
 from textnode import TextNode
 from leafnode import LeafNode
-from functions import (split_nodes_delimiter, extract_markdown_images, extract_markdown_links, split_nodes_image, split_nodes_link, text_to_textnodes, markdown_to_blocks)
-
+from functions import (split_nodes_delimiter, extract_markdown_images, extract_markdown_links, split_nodes_image, split_nodes_link, text_to_textnodes, markdown_to_blocks, markdown_to_html_node)
+from parentnode import ParentNode
 
 class TestFunctions(unittest.TestCase):
     def test_split_nodes_delimiter_html_nodes(self):
@@ -158,6 +158,26 @@ This is the same paragraph on a new line
             'This is another paragraph with *italic* text and `code` here\nThis is the same paragraph on a new line',
             '* This is a list\n* with items',
         ], markdown_to_blocks(markdown))
+
+
+    def test_markdown_to_html(self):
+        markdown = '''
+### This is a level 3 heading
+
+This is **bolded** paragraph
+
+   This is another paragraph with *italic* text and `code` here
+This is the same paragraph on a new line
+
+
+* This is a list
+* with items   
+'''
+
+        self.assertEqual(
+            '<div><h3>This is a level 3 heading</h3><p>This is <b>bolded</b> paragraph</p><p>This is another paragraph with <i>italic</i> text and <code>code</code> here\nThis is the same paragraph on a new line</p><ul><li>This is a list</li><li>with items</li></ul></div>',
+            markdown_to_html_node(markdown).to_html()
+        )
 
 
 if __name__ == "__main__":

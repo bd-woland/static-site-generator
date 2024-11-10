@@ -54,7 +54,7 @@ class BlockType():
         ordinal = 0
         for line in block.splitlines():
             ordinal += 1
-            if f'{ordinal}. ' != line[:3]:
+            if None == re.search(f'^{ordinal}\\. ', line):
                 return False
 
         return True

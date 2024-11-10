@@ -37,7 +37,16 @@ class TestHTMLNode(unittest.TestCase):
             ],
             BlockType.ORDERED_LIST: [
                 '''1. ordered
-2. list''',
+2. list
+3. but
+4. I
+5. actually
+6. need
+7. at
+8. least
+9. 10
+10. items
+''',
             ],
             BlockType.PARAGRAPH: [
                 'single line paragraph',
@@ -48,6 +57,7 @@ class TestHTMLNode(unittest.TestCase):
                 '* listing\n* elements\n*is hard',
                 '''- mixed\n* delimited lists\n- are invalid''',
                 '1. I cannot\n2. count to\n10. ten',
+                '1. Punctuation\n2, is\n3. hard',
             ],
         }
 

@@ -3,6 +3,8 @@ import re
 from textnode import TextNode
 from leafnode import LeafNode
 from htmlnode import HTMLNode
+from parentnode import ParentNode
+from blocktype import (BlockType, block_to_block_type)
 
 
 def text_node_to_html_node(text_node: TextNode) -> LeafNode:
@@ -102,6 +104,13 @@ def markdown_to_blocks(markdown: str) -> list[str]:
     return list(map(lambda block: block.strip(), blocks))
 
 
+def markdown_to_html_node(markdown: str) -> HTMLNode:
+    blocks = markdown_to_blocks(markdown)
+    nodes = list(map(__block_to_html_node, blocks))
+
+    return ParentNode('div', nodes)
+
+
 def __split_text_nodes(old_nodes: list[TextNode|HTMLNode], node_splitter: callable) -> list[TextNode|HTMLNode]:
     split_nodes = []
 
@@ -134,3 +143,85 @@ def __extract_url_nodes(node: TextNode, text_and_urls: list[tuple[str, str]], de
 
     return split_node
 
+
+def __block_to_html_node(block: str) -> HTMLNode:
+    type = block_to_block_type(block)
+
+    if BlockType.QUOTE == type:
+        return __quote_block_to_html_node(block)
+    if BlockType.UNORDERED_LIST == type:
+        return __unordered_list_block_to_html_node(block)
+    if BlockType.ORDERED_LIST == type:
+        return __ordered_list_block_to_html_node(block)
+    if BlockType.CODE == type:
+        return __code_block_to_html_node(block)
+    if BlockType.HEADING == type:
+        return __heading_block_to_html_node(block)
+    
+    return __paragraph_block_to_html_node(block)
+
+
+def __quote_block_to_html_node(block: str) -> HTMLNode:
+    html_nodes = []
+
+    for line in block.splitlines():
+        text = line[1:].strip()
+        text_nodes = text_to_textnodes(text)
+        html_nodes.extend(map(text_node_to_html_node, text_nodes))
+
+    return ParentNode('blockquote', html_nodes)
+
+
+def __unordered_list_block_to_html_node(block: str) -> HTMLNode:
+    items = []
+
+    for line in block.splitlines():
+        text = line[1:].strip()
+        html_nodes = __text_to_html_nodes(text)
+        items.append(ParentNode('li', html_nodes))
+
+    return ParentNode('ul', items)
+
+
+def __ordered_list_block_to_html_node(block: str) -> HTMLNode:
+    items = []
+
+    ordinal = 0
+    for line in block.splitlines():
+        ordinal += 1
+        match = re.search(f'^{ordinal}\\.\\s+(?P<text>.*)$', line)
+        html_nodes = __text_to_html_nodes(match.group('text'))
+        items.append(ParentNode('li', html_nodes))
+
+    return ParentNode('ol', items)
+
+
+def __code_block_to_html_node(block: str) -> HTMLNode:
+    lines = block.splitlines()
+
+    if (1 == len(lines)):
+        text = block[3:-4]
+    else:
+        text = ''.join(lines[1:-2])
+
+    return ParentNode('pre', [ParentNode('code', text)])
+
+
+def __heading_block_to_html_node(block: str) -> HTMLNode:
+    match = re.search('^(?P<level>#{1,6})\\s+(?P<text>.*)$', block)
+    level = len(match.group('level'))
+    html_nodes = __text_to_html_nodes(match.group('text'))
+
+    return ParentNode(f'h{level}', html_nodes)
+
+
+def __paragraph_block_to_html_node(block: str) -> HTMLNode:
+    html_nodes = __text_to_html_nodes(block)
+
+    return ParentNode('p', html_nodes)
+
+
+def __text_to_html_nodes(text: str) -> list[HTMLNode]:
+    text_nodes = text_to_textnodes(text)
+
+    return list(map(text_node_to_html_node, text_nodes))
