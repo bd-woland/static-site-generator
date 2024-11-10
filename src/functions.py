@@ -111,6 +111,14 @@ def markdown_to_html_node(markdown: str) -> HTMLNode:
     return ParentNode('div', nodes)
 
 
+def extract_title(markdown: str) -> str:
+    for block in markdown_to_blocks(markdown):
+        if 1 == BlockType.get_heading_size(block):
+            return __heading_block_to_html_node(block).get_inner_html()
+    
+    raise Exception('Markdown does not contain any level 1 headings.')
+
+
 def __split_text_nodes(old_nodes: list[TextNode|HTMLNode], node_splitter: callable) -> list[TextNode|HTMLNode]:
     split_nodes = []
 
@@ -161,7 +169,7 @@ def __block_to_html_node(block: str) -> HTMLNode:
     return __paragraph_block_to_html_node(block)
 
 
-def __quote_block_to_html_node(block: str) -> HTMLNode:
+def __quote_block_to_html_node(block: str) -> ParentNode:
     html_nodes = []
 
     for line in block.splitlines():
@@ -172,7 +180,7 @@ def __quote_block_to_html_node(block: str) -> HTMLNode:
     return ParentNode('blockquote', html_nodes)
 
 
-def __unordered_list_block_to_html_node(block: str) -> HTMLNode:
+def __unordered_list_block_to_html_node(block: str) -> ParentNode:
     items = []
 
     for line in block.splitlines():
@@ -183,7 +191,7 @@ def __unordered_list_block_to_html_node(block: str) -> HTMLNode:
     return ParentNode('ul', items)
 
 
-def __ordered_list_block_to_html_node(block: str) -> HTMLNode:
+def __ordered_list_block_to_html_node(block: str) -> ParentNode:
     items = []
 
     ordinal = 0
@@ -196,7 +204,7 @@ def __ordered_list_block_to_html_node(block: str) -> HTMLNode:
     return ParentNode('ol', items)
 
 
-def __code_block_to_html_node(block: str) -> HTMLNode:
+def __code_block_to_html_node(block: str) -> ParentNode:
     lines = block.splitlines()
 
     if (1 == len(lines)):
@@ -207,7 +215,7 @@ def __code_block_to_html_node(block: str) -> HTMLNode:
     return ParentNode('pre', [ParentNode('code', text)])
 
 
-def __heading_block_to_html_node(block: str) -> HTMLNode:
+def __heading_block_to_html_node(block: str) -> ParentNode:
     match = re.search('^(?P<level>#{1,6})\\s+(?P<text>.*)$', block)
     level = len(match.group('level'))
     html_nodes = __text_to_html_nodes(match.group('text'))
@@ -215,7 +223,7 @@ def __heading_block_to_html_node(block: str) -> HTMLNode:
     return ParentNode(f'h{level}', html_nodes)
 
 
-def __paragraph_block_to_html_node(block: str) -> HTMLNode:
+def __paragraph_block_to_html_node(block: str) -> ParentNode:
     html_nodes = __text_to_html_nodes(block)
 
     return ParentNode('p', html_nodes)

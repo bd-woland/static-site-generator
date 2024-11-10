@@ -27,7 +27,15 @@ class BlockType():
         return BlockType.PARAGRAPH
 
     def is_heading(block: str) -> bool:
-        return None != re.search('^#{1,6} ', block)
+        return None != BlockType.get_heading_size(block)
+
+    def get_heading_size(block: str) -> None|int:
+        match = re.search('^#{1,6} ', block)
+
+        if None == match:
+            return None
+
+        return match.end() - 1
 
     def is_code(block: str) -> bool:
         return '```' == block[:3] and '```' == block[-3:]
