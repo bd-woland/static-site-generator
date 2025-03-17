@@ -29,7 +29,7 @@ def text_node_to_html_node(text_node: TextNode) -> LeafNode:
 
 def split_nodes_delimiter(old_nodes: list[TextNode|HTMLNode], delimiter: str, text_type: str) -> list[TextNode|HTMLNode]:
     def split_node_delimiter(node: TextNode) -> list[TextNode]:
-        if delimiter not in node.text:
+        if node.text_type != TextNode.TEXT or delimiter not in node.text:
             return [node]
 
         parts = node.text.split(delimiter)
@@ -87,11 +87,11 @@ def split_nodes_link(old_nodes: list[TextNode|HTMLNode]) -> list[TextNode|HTMLNo
 
 def text_to_textnodes(text: str) -> list[TextNode]:
     transformers = [
-        lambda nodes: split_nodes_delimiter(nodes, '**', TextNode.BOLD),
-        lambda nodes: split_nodes_delimiter(nodes, '*', TextNode.ITALIC),
-        lambda nodes: split_nodes_delimiter(nodes, '`', TextNode.CODE),
         split_nodes_image,
-        split_nodes_link
+        split_nodes_link,
+        lambda nodes: split_nodes_delimiter(nodes, '**', TextNode.BOLD),
+        lambda nodes: split_nodes_delimiter(nodes, '_', TextNode.ITALIC),
+        lambda nodes: split_nodes_delimiter(nodes, '`', TextNode.CODE),
     ]
 
     nodes = [TextNode(text, TextNode.TEXT)]

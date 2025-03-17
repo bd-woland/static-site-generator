@@ -65,11 +65,11 @@ class TestFunctions(unittest.TestCase):
         self.assertRaises(Exception, split_node)
 
     def test_split_nodes_delimiter_consecutive(self):
-        mixed_node = TextNode('This is text with a **bolded** word and an *italic* word', TextNode.TEXT)
+        mixed_node = TextNode('This is text with a **bolded** word and an _italic_ word', TextNode.TEXT)
 
         split_nodes = split_nodes_delimiter(
             split_nodes_delimiter([mixed_node], '**', TextNode.BOLD),
-            '*',
+            '_',
             TextNode.ITALIC
         )
 
@@ -130,7 +130,7 @@ class TestFunctions(unittest.TestCase):
         ], split_nodes_link([node]))
 
     def test_text_to_textnodes(self):
-        text = 'This is **text** with an *italic* word and a `code block` and an ![image](https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/zjjcJKZ.png) and a [link](https://boot.dev)'
+        text = 'This is **text** with an _italic_ word and a `code block` and an ![image](https://storage.googleapis.com/qvault-webapp-dynamic-assets/course_assets/zjjcJKZ.png) and a [link](https://boot.dev)'
 
         self.assertEqual([
             TextNode("This is ", TextNode.TEXT),
@@ -149,7 +149,7 @@ class TestFunctions(unittest.TestCase):
         markdown = '''
 This is **bolded** paragraph
 
-   This is another paragraph with *italic* text and `code` here
+   This is another paragraph with _italic_ text and `code` here
 This is the same paragraph on a new line
 
 
@@ -162,7 +162,7 @@ This is the same paragraph on a new line
 
         self.assertEqual([
             'This is **bolded** paragraph',
-            'This is another paragraph with *italic* text and `code` here\nThis is the same paragraph on a new line',
+            'This is another paragraph with _italic_ text and `code` here\nThis is the same paragraph on a new line',
             '* This is a list\n* with items',
         ], markdown_to_blocks(markdown))
 
@@ -173,7 +173,7 @@ This is the same paragraph on a new line
 
 This is **bolded** paragraph
 
-   This is another paragraph with *italic* text and `code` here
+   This is another paragraph with _italic_ text and `code` here
 This is the same paragraph on a new line
 
 
