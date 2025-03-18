@@ -123,7 +123,7 @@ def extract_title(markdown: str) -> str:
     raise Exception('Markdown does not contain any level 1 headings.')
 
 
-def generate_page(from_path: str, template_path: str, dest_path: str):
+def generate_page(from_path: str, template_path: str, dest_path: str, basepath: str = '/'):
     print(f'Generating page from {from_path} to {dest_path} using {template_path}')
 
     markdown = get_file_contents(from_path)
@@ -134,14 +134,17 @@ def generate_page(from_path: str, template_path: str, dest_path: str):
 
     html = template.replace('{{ Title }}', title).replace('{{ Content }}', content)
 
+    if '/' != basepath:
+        html = html.replace('href="/', f'href="{basepath}').replace('src="/', f'src="{basepath}')
+
     put_file_contents(dest_path, html)
 
 
-def generate_pages_recursive(dir_path_content: str, template_path: str, dest_dir_path: str):
+def generate_pages_recursive(dir_path_content: str, template_path: str, dest_dir_path: str, basepath: str = '/'):
     def map_file(src_path: str, target_dir: str):
         target_path = os.path.join(target_dir, Path(src_path).with_suffix('.html').name)
 
-        generate_page(src_path, template_path, target_path)
+        generate_page(src_path, template_path, target_path, basepath)
 
     map_dir(dir_path_content, dest_dir_path, map_file)
 
